@@ -1,4 +1,4 @@
-package handlers
+package api_handlers
 
 import (
 	"encoding/json"
@@ -47,6 +47,10 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 type TaskRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	DueDate     string `json:"due_date"`
+	Priority    string `json:"priority"`
+	Assignees   []string
+	Tags        []string
 }
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
@@ -62,10 +66,13 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		Name:        taskRequest.Name,
 		Description: taskRequest.Description,
 		Status:      "active",
+		DueDate:     taskRequest.DueDate,
+		Priority:    taskRequest.Priority,
 		CreatedBy:   r.Context().Value("username").(string),
 		CreatedAt:   time.Now().Format(time.RFC3339),
 		UpdatedAt:   time.Now().Format(time.RFC3339),
-		Assignees:   []string{r.Context().Value("username").(string)},
+		Assignees:   taskRequest.Assignees,
+		Tags:        taskRequest.Tags,
 	}
 
 	_, err = utils.TaskCollection.InsertOne(r.Context(), task)
