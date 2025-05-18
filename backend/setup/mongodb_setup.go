@@ -85,6 +85,9 @@ func main() {
 			Options: options.Index().SetUnique(true),
 		},
 		{
+			Keys: bson.M{"members": 1},
+		},
+		{
 			Keys: bson.D{{Key: "project_name", Value: 1}}, // ascending index on name
 		},
 	}

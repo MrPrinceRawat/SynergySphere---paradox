@@ -35,7 +35,16 @@ func main() {
 	protected := r.PathPrefix("/api").Subrouter()
 	protected.Use(middleware.JWTAuth)
 
+	// Profile Routes
 	protected.HandleFunc("/me", handlers.GetUser).Methods("GET")
+
+	// Project Routes
+	protected.HandleFunc("/projects", handlers.GetProjects).Methods("GET")
+	protected.HandleFunc("/projects/{project_id}", handlers.GetProject).Methods("GET")
+	protected.HandleFunc("/projects", handlers.CreateProject).Methods("POST")
+	protected.HandleFunc("/projects/{project_id}", handlers.UpdateProject).Methods("PUT")
+	protected.HandleFunc("/projects/{project_id}", handlers.DeleteProject).Methods("DELETE")
+	protected.HandleFunc("/projects/{project_id}/members", handlers.AddMemberToProject).Methods("POST")
 
 	logger.Logger.Info("Starting server...")
 
