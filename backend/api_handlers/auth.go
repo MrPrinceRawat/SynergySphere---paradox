@@ -30,6 +30,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	_, err := utils.UserCollection.InsertOne(context.Background(), user)
 	if err != nil {
+		logger.Logger.Error(err)
 		http.Error(w, "User already exists", http.StatusBadRequest)
 		return
 	}
@@ -66,6 +67,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	logger.Logger.Info(tokenString)
 	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
 }

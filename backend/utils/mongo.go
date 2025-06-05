@@ -13,6 +13,7 @@ import (
 var UserCollection *mongo.Collection
 var ProjectCollection *mongo.Collection
 var TaskCollection *mongo.Collection
+var ExpensesCollection *mongo.Collection
 
 func InitMongo(cfg *config.Config) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -27,4 +28,5 @@ func InitMongo(cfg *config.Config) {
 	UserCollection = client.Database("SYSPH").Collection("users")
 	ProjectCollection = client.Database("SYSPH").Collection("projects")
 	TaskCollection = client.Database("SYSPH").Collection("tasks")
+	ExpensesCollection = client.Database("SYSPH").Collection("expenses")
 }

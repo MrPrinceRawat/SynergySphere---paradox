@@ -45,12 +45,15 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 }
 
 type TaskRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	DueDate     string `json:"due_date"`
-	Priority    string `json:"priority"`
-	Assignees   []string
-	Tags        []string
+	Name            string   `json:"name"`
+	Description     string   `json:"description"`
+	DueDate         string   `json:"due_date"`
+	Priority        string   `json:"priority"`
+	ProjectID       string   `json:"project_id"`
+	Assignees       []string `json:"assignees"`
+	Tags            []string `json:"tags"`
+	DependsOn       []string `json:"depends_on"`
+	EstimatedEffort int      `json:"estimated_effort"`
 }
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
@@ -62,17 +65,20 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	task := models.Task{
-		TaskID:      "task_" + uuid.New().String(),
-		Name:        taskRequest.Name,
-		Description: taskRequest.Description,
-		Status:      "active",
-		DueDate:     taskRequest.DueDate,
-		Priority:    taskRequest.Priority,
-		CreatedBy:   r.Context().Value("username").(string),
-		CreatedAt:   time.Now().Format(time.RFC3339),
-		UpdatedAt:   time.Now().Format(time.RFC3339),
-		Assignees:   taskRequest.Assignees,
-		Tags:        taskRequest.Tags,
+		TaskID:          "task_" + uuid.New().String(),
+		Name:            taskRequest.Name,
+		Description:     taskRequest.Description,
+		Status:          "active",
+		ProjectID:       taskRequest.ProjectID,
+		DueDate:         taskRequest.DueDate,
+		Priority:        taskRequest.Priority,
+		CreatedBy:       r.Context().Value("username").(string),
+		CreatedAt:       time.Now().Format(time.RFC3339),
+		UpdatedAt:       time.Now().Format(time.RFC3339),
+		Assignees:       taskRequest.Assignees,
+		Tags:            taskRequest.Tags,
+		DependsOn:       taskRequest.DependsOn,
+		EstimatedEffort: taskRequest.EstimatedEffort,
 	}
 
 	_, err = utils.TaskCollection.InsertOne(r.Context(), task)
@@ -162,4 +168,25 @@ func AddMemberToTask(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+func GetProjectsTasks(w http.ResponseWriter, r *http.Request) {
+
+	project_id := r.URL.Query().Get("project_id")
+
+	cursor, err := utils.TaskCollection.Find(r.Context(), bson.M{"project_id": project_id})
+	if err != nil {
+		http.Error(w, "Error getting projects", http.StatusInternalServerError)
+		return
+	}
+
+	tasks := []models.Task{}
+
+	err = cursor.All(r.Context(), &tasks)
+	if err != nil {
+		http.Error(w, "Error fetching tasks", http.StatusInternalServerError)
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, tasks)
 }

@@ -46,7 +46,7 @@ export default function LoginPage() {
       if (res.status === 200) {
         var data = await res.json()
         Cookies.set("auth-token", data.token)
-        router.push("/dashboard")
+        router.push("/")
       } else {
         console.log("Login failed")
         setIsLoading(false)
@@ -131,7 +131,7 @@ export default function LoginPage() {
         <CardFooter className="flex flex-col">
           <div className="mt-2 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="font-medium text-primary hover:underline">
+            <Link href="/register" className="font-medium text-primary hover:underline">
               Sign up
             </Link>
           </div>

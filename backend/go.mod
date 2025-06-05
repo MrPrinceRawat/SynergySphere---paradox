@@ -7,7 +7,11 @@ require (
 	go.mongodb.org/mongo-driver v1.17.3
 )
 
-require github.com/felixge/httpsnoop v1.0.3 // indirect
+require (
+	github.com/felixge/httpsnoop v1.0.3 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
+)
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
@@ -24,6 +28,7 @@ require (
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
-	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/text v0.17.0 // indirect
+	golang.org/x/sync v0.9.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
+	gorm.io/gorm v1.30.0
 )

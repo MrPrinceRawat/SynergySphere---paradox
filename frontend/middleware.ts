@@ -14,9 +14,16 @@ export function middleware(request: NextRequest) {
 
   // If trying to access a protected route without token, redirect to login
   if (!token) {
+    if (pathname === '/register') {
+      return NextResponse.next()
+    }
     const loginUrl = new URL('/login', request.url)
     return NextResponse.redirect(loginUrl)
   }
+
+  // if (request.url === 'http://localhost:3000/' || request.url === 'http://localhost:3000') {
+  //   return NextResponse.redirect(new URL('/dashboard', request.url))
+  // }
 
   // Allow access to protected routes if authenticated
   return NextResponse.next()

@@ -49,11 +49,28 @@ func main() {
 
 	// Task Routes
 	protected.HandleFunc("/tasks", api_handlers.GetTasks).Methods("GET")
+	protected.HandleFunc("/tasks/project", api_handlers.GetProjectsTasks).Methods("GET")
 	protected.HandleFunc("/tasks/{task_id}", api_handlers.GetTask).Methods("GET")
 	protected.HandleFunc("/tasks", api_handlers.CreateTask).Methods("POST")
 	protected.HandleFunc("/tasks/{task_id}", api_handlers.UpdateTask).Methods("PUT")
 	protected.HandleFunc("/tasks/{task_id}", api_handlers.DeleteTask).Methods("DELETE")
 	protected.HandleFunc("/tasks/{task_id}/members", api_handlers.AddMemberToTask).Methods("POST")
+
+	// User Routes
+	protected.HandleFunc("/users/find", api_handlers.FindUser).Methods("GET")
+	protected.HandleFunc("/users/{username}", api_handlers.GetUser).Methods("GET")
+
+	// Expense routes
+	protected.HandleFunc("/expenses", api_handlers.CreateExpense).Methods("POST")
+	protected.HandleFunc("/expenses", api_handlers.GetExpensesForUserProjects).Methods("GET")
+	protected.HandleFunc("/expenses/summary", api_handlers.GetExpenseSummary).Methods("GET")
+	protected.HandleFunc("/expenses/{id}", api_handlers.GetExpense).Methods("GET")
+	protected.HandleFunc("/expenses/{id}", api_handlers.UpdateExpense).Methods("PUT")
+	protected.HandleFunc("/expenses/{id}", api_handlers.DeleteExpense).Methods("DELETE")
+
+	// Convenience routes
+	protected.HandleFunc("/projects/{project_id}/expenses", api_handlers.GetExpensesByProject).Methods("GET")
+	protected.HandleFunc("/tasks/{task_id}/expenses", api_handlers.GetExpensesByTask).Methods("GET")
 
 	logger.Logger.Info("Starting server...")
 

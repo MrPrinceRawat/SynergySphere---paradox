@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MrPrinceRawat/SynergySphere---paradox/backend/logger"
 	"github.com/MrPrinceRawat/SynergySphere---paradox/backend/models"
 	"github.com/MrPrinceRawat/SynergySphere---paradox/backend/utils"
 	"github.com/google/uuid"
@@ -28,6 +29,17 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Count all the open tasks for each project
+	for i, project := range projects {
+		count, err := utils.TaskCollection.CountDocuments(r.Context(), bson.M{"project_id": project.ProjectID, "status": "active"})
+		if err != nil {
+			http.Error(w, "Error fetching tasks", http.StatusInternalServerError)
+			return
+		}
+
+		projects[i].TaskCount = count
+	}
+
 	json.NewEncoder(w).Encode(projects)
 }
 
@@ -45,8 +57,12 @@ func GetProject(w http.ResponseWriter, r *http.Request) {
 }
 
 type ProjectRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	ImageURL    string        `json:"image_url"`
+	Deadline    string        `json:"deadline"`
+	Budget      float32       `json:"budget"`
+	Tags        []models.Tags `json:"tags"`
 }
 
 func CreateProject(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +73,7 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	project := models.Project{
+	project := models.CreateProject{
 		ProjectID:   "project_" + uuid.New().String(),
 		Name:        projectRequest.Name,
 		Description: projectRequest.Description,
@@ -66,10 +82,16 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:   time.Now().Format(time.RFC3339),
 		UpdatedAt:   time.Now().Format(time.RFC3339),
 		Members:     []string{r.Context().Value("username").(string)},
+		ImageURL:    projectRequest.ImageURL,
+		Deadline:    projectRequest.Deadline,
+		Budget:      projectRequest.Budget,
+		Spend:       0,
+		Tags:        projectRequest.Tags,
 	}
 
 	_, err = utils.ProjectCollection.InsertOne(r.Context(), project)
 	if err != nil {
+		logger.Logger.Error(err)
 		http.Error(w, "Error creating project", http.StatusInternalServerError)
 		return
 	}
